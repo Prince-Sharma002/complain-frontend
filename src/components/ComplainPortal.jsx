@@ -68,7 +68,7 @@ const ComplainPortal = () => {
 
     try{
 
-        const response = fetch('http://localhost:5000/complain' , {
+        const response = fetch('https://complain-backend.onrender.com/complain' , {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

@@ -6,7 +6,7 @@ const Dashboard = () => {
 
     const getdata = async () => {
         try {
-            const response = await fetch('http://localhost:5000/getdata', {
+            const response = await fetch('https://complain-backend.onrender.com/getdata', {
                 method: "GET",
                 headers: {
                   "Content-Type": "application/json"
@@ -35,7 +35,7 @@ const Dashboard = () => {
         
     try{
 
-        const response = fetch('http://localhost:5000/sendemail' , {
+        const response = fetch('https://complain-backend.onrender.com/sendemail' , {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -63,7 +63,7 @@ const Dashboard = () => {
 
     const deleteComapain = async (id) => {
         try {
-            const response = await fetch(`http://localhost:5000/getdata/delete/${id}`, {
+            const response = await fetch(`https://complain-backend.onrender.com/getdata/delete/${id}`, {
                 method: "DELETE",
                 headers: {
                     "Content-Type": "application/json"

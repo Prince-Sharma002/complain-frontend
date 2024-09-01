@@ -121,7 +121,7 @@ const AdminPortal = () => {
   useEffect(() => {
     const getData = async () => {
       try {
-        const response = await fetch('http://localhost:5000/getdata', {
+        const response = await fetch('https://complain-backend.onrender.com/getdata', {
           method: "GET",
           headers: {
             "Content-Type": "application/json"
