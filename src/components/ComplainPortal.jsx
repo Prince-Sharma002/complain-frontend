@@ -80,7 +80,7 @@ const ComplainPortal = () => {
     
     if (!response.ok) {
         // Handle non-2xx HTTP responses
-        alert( "unable to register" );
+        alert( "complain register" );
         return;
     }
     
