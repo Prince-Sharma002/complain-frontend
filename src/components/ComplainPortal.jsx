@@ -80,7 +80,7 @@ const ComplainPortal = () => {
     
     if (!response.ok) {
         // Handle non-2xx HTTP responses
-        alert( "complain register" );
+        alert( "Complain Registered successful" );
         return;
     }
     
@@ -101,8 +101,6 @@ const ComplainPortal = () => {
   return (
     <div className="container">
 
-
-    <button type="button"> <a href='https://complain-frontend.vercel.app/admin'> MAP </a> </button>
       <form onSubmit={submithandler}>
         <label htmlFor="username">Name</label>
         <input
