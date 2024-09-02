@@ -47,7 +47,7 @@ const Dashboard = () => {
     
     if (!response.ok) {
         // Handle non-2xx HTTP responses
-        alert( "cant sent" );
+        alert( "email sent" );
         return;
     }
     

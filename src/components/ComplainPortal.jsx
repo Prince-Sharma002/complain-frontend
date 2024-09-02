@@ -100,6 +100,9 @@ const ComplainPortal = () => {
 
   return (
     <div className="container">
+
+
+    <button type="button"> <a href='https://complain-frontend.vercel.app/admin'> MAP </a> </button>
       <form onSubmit={submithandler}>
         <label htmlFor="username">Name</label>
         <input
