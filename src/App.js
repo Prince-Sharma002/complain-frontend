@@ -5,6 +5,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import { } from "react-router-dom";
 import Dashboard from "./Admin side/Dashboard";
+import Progress from "./Admin side/Progress";
 
 const App = () => {
 
@@ -14,6 +15,7 @@ const App = () => {
         <Route path="/" element={<ComplainPortal />} />
         <Route path="/admin" element={<AdminPortal />} />
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/progress" element={<Progress />} />
       </Routes>
     </BrowserRouter>
   );
