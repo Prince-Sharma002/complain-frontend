@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import { NavLink } from 'react-router-dom';
 
 const Progress = () => {
     const [data, setData] = useState([]);
     const [pid, setPid] = useState(''); // State to store user input
     const [progress, setProgress] = useState(null); // State to store the progress for the given PID
 
+    //  https://complain-backend.onrender.com/getdata
     const getdata = async () => {
         try {
             const response = await fetch('https://complain-backend.onrender.com/getdata', {
@@ -40,7 +42,7 @@ const Progress = () => {
     // Function to handle form submission
     const handleSubmit = (e) => {
         e.preventDefault();
-        const selectedData = data.find(item => item.pid === pid);
+        const selectedData = data.find(item => item._id === pid);
         if (selectedData) {
             setProgress(selectedData.progress);
         } else {
@@ -66,14 +68,19 @@ const Progress = () => {
     });
 
     return (
-        <div>
-            <h2>Progress Tracker</h2>
-            <form onSubmit={handleSubmit}>
+        <div style={{padding:"10rem"}}>
+                <button style={{ position: "absolute", right: "2rem", top: "3rem" }}>
+
+                    <NavLink style={{ color: "white", textDecoration: "none" }} to={"/"}>Complain Portal</NavLink>
+                </button>
+            <h2 style={{textAlign : "center"}}>Progress Tracker</h2>
+            <form onSubmit={handleSubmit} style={{ display : "flex" , alignItems : "center"}}>
                 <input
                     type="text"
                     value={pid}
                     onChange={handleInputChange}
                     placeholder="Enter your PID"
+                    style={{width : "50%" , textAlign : "center"  }}
                 />
                 <button type="submit">Check Progress</button>
             </form>
@@ -84,10 +91,13 @@ const Progress = () => {
                         Complain Sent
                     </div>
                     <div style={stageStyle(progress >= 2)}>
-                        Accept/Reject
+                        Complain Accept
                     </div>
                     <div style={stageStyle(progress >= 3)}>
                         In Progress
+                    </div>
+                    <div style={stageStyle(progress >= 4)}>
+                        Resolved
                     </div>
                 </div>
             )}
@@ -96,3 +106,4 @@ const Progress = () => {
 }
 
 export default Progress;
+
