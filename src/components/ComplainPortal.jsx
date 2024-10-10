@@ -1,6 +1,7 @@
 import React, { useState , useEffect } from 'react';
 import '../styles/userComplain.css';
 import axios from 'axios';
+import { NavLink } from 'react-router-dom';
 
 const ComplainPortal = () => {
   const [userComplain, setUserComplain] = useState({
@@ -80,7 +81,7 @@ const ComplainPortal = () => {
     
     if (!response.ok) {
         // Handle non-2xx HTTP responses
-        alert( "Complain Registered successful" );
+        alert( "Comaplain Submitted Successfully" );
         return;
     }
     
@@ -95,12 +96,13 @@ const ComplainPortal = () => {
   };
 
 
-
-
-
   return (
     <div className="container">
+        <button style={{ position: "absolute", right: "2rem", top: "3rem" }}>
 
+          <NavLink style={{ color: "white", textDecoration: "none" }} to={"/progress"}>Progress</NavLink>
+        </button>
+      <h1> Complain Portal </h1>
       <form onSubmit={submithandler}>
         <label htmlFor="username">Name</label>
         <input
@@ -155,3 +157,4 @@ const ComplainPortal = () => {
 };
 
 export default ComplainPortal;
+
