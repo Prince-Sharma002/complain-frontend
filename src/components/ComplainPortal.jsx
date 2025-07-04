@@ -1,6 +1,7 @@
 import React, { useState , useEffect } from 'react';
 import '../styles/userComplain.css';
 import axios from 'axios';
+import { NavLink } from 'react-router-dom';
 
 const ComplainPortal = () => {
   const [userComplain, setUserComplain] = useState({
@@ -80,7 +81,7 @@ const ComplainPortal = () => {
     
     if (!response.ok) {
         // Handle non-2xx HTTP responses
-        alert( "Complain Registered successful" );
+        alert( "Comaplain Submitted Successfully" );
         return;
     }
     
@@ -95,61 +96,90 @@ const ComplainPortal = () => {
   };
 
 
-
-
-
   return (
-    <div className="container">
+    <div className="complain-container">
+      <div className="complain-card fade-in">
+        <h1 className="complain-title">Complain Portal</h1>
+        <form className="complain-form" onSubmit={submithandler}>
+          <div className="form-row">
+            <div className="form-group">
+              <label className="form-label" htmlFor="username">Name</label>
+              <input
+                className="form-input"
+                type="text"
+                name="name"
+                id="username"
+                onChange={handleChange}
+                value={userComplain.name}
+                placeholder="Enter your full name"
+                required
+              />
+            </div>
+            
+            <div className="form-group">
+              <label className="form-label" htmlFor="phone">Phone</label>
+              <input
+                className="form-input"
+                type="text"
+                name="phone"
+                id="phone"
+                onChange={handleChange}
+                value={userComplain.phone}
+                placeholder="Enter your phone number"
+                required
+              />
+            </div>
+          </div>
 
-      <form onSubmit={submithandler}>
-        <label htmlFor="username">Name</label>
-        <input
-          type="text"
-          name="name"
-          id="username"
-          onChange={handleChange}
-          value={userComplain.name}
-        />
+          <div className="form-group form-group-full">
+            <label className="form-label" htmlFor="email">Email</label>
+            <input
+              className="form-input"
+              type="email"
+              name="email"
+              id="email"
+              onChange={handleChange}
+              value={userComplain.email}
+              placeholder="Enter your email address"
+              required
+            />
+          </div>
 
-        <label htmlFor="desciption">Description</label>
-        <input
-          type="text"
-          name="desciption"
-          id="desciption"
-          onChange={handleChange}
-          value={userComplain.description}
-        />
+          <div className="form-group form-group-full">
+            <label className="form-label" htmlFor="desciption">Description</label>
+            <input
+              className="form-input"
+              type="text"
+              name="desciption"
+              id="desciption"
+              onChange={handleChange}
+              value={userComplain.description}
+              placeholder="Describe your complaint in detail"
+              required
+            />
+          </div>
 
-        <label htmlFor="image">Image</label>
-        <input
-          type="file"
-          name="image"
-          accept="image/*"
-          id="image"
-          onChange={handleChange}
-   
-        />
+          <div className="form-group form-group-full">
+            <label className="form-label" htmlFor="image">Upload Image (Optional)</label>
+            <div className="file-input">
+              <input
+                type="file"
+                name="image"
+                accept="image/*"
+                id="image"
+                onChange={handleChange}
+              />
+              <label className="file-input-label" htmlFor="image">
+                📷 Choose Image File
+              </label>
+            </div>
+          </div>
 
-        <label htmlFor="phone">Phone</label>
-        <input
-          type="text"
-          name="phone"
-          id="phone"
-          onChange={handleChange}
-          value={userComplain.phone}
-        />
-
-        <label htmlFor="email">Email</label>
-        <input
-          type="email"
-          name="email"
-          id="email"
-          onChange={handleChange}
-          value={userComplain.email}
-        />
-
-        <button type="submit">Submit</button>
-      </form>
+          <button className="submit-btn" type="submit">
+            Submit Complaint
+          </button>
+        </form>
+      </div>
     </div>
   );
 };
