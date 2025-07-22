@@ -68,6 +68,5 @@ This project is licensed under the **MIT License**.
 
 For any queries or contributions, reach out via [GitHub](https://github.com/Prince-Sharma002) or email.
 
-```
 
 
