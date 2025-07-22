@@ -3,6 +3,9 @@
 
 A powerful complaint management system designed to enhance transparency and efficiency. This platform provides a dynamic map-based dashboard and real-time email notifications to keep users informed about complaint progress.
 
+### 📮 Complaint Portal Interface
+![Complaint Portal](./src/assets/complainPortal.png)
+
 ## 🛠️ Project Overview
 Created a **citizen-facing water leakage detection and reporting portal**, enabling users to easily report leaks and automatically alert relevant departments for rapid response.
 
@@ -25,9 +28,6 @@ Created a **citizen-facing water leakage detection and reporting portal**, enabl
 
 ### 📊 Dashboard View
 ![Dashboard](./src/assets/dashboard.png)
-
-### 📮 Complaint Portal Interface
-![Complaint Portal](./src/assets/complainPortal.png)
 
 
 ## ⚙️ Installation & Setup
