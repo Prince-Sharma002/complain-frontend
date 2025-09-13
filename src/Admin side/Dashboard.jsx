@@ -17,7 +17,7 @@ const Dashboard = () => {
 
     const getdata = async () => {
         try {
-            const response = await fetch('http://localhost:4000/getdata', {
+            const response = await fetch('https://complain-backend.onrender.com/getdata', {
                 method: "GET",
                 headers: {
                   "Content-Type": "application/json"
@@ -44,7 +44,7 @@ const Dashboard = () => {
 
     const sendEmail = async(email , id , progress)=>{
     try{
-        const response = fetch('http://localhost:4000/sendemail' , {
+        const response = fetch('https://complain-backend.onrender.com/sendemail' , {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -73,7 +73,7 @@ const Dashboard = () => {
 
     const updateProgress = async (id, newProgress) => {
         try {
-          const response = await fetch('http://localhost:4000/updateprogress', {
+          const response = await fetch('https://complain-backend.onrender.com/updateprogress', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -100,7 +100,7 @@ const Dashboard = () => {
 
     const deleteComapain = async (id) => {
         try {
-            const response = await fetch(`http://localhost:4000/getdata/delete/${id}`, {
+            const response = await fetch(`https://complain-backend.onrender.com/getdata/delete/${id}`, {
                 method: "DELETE",
                 headers: {
                     "Content-Type": "application/json"
@@ -167,14 +167,14 @@ const Dashboard = () => {
                                         {complaint.image && (
                                             <div className="complaint-image">
                                                 <img 
-                                                    src={complaint.image.startsWith('http') ? complaint.image : `http://localhost:4000${complaint.image}`} 
+                                                    src={complaint.image.startsWith('http') ? complaint.image : `https://complain-backend.onrender.com${complaint.image}`} 
                                                     alt="Complaint evidence"
                                                     style={{ cursor: 'pointer' }}
                                                     onClick={(e) => {
                                                         e.stopPropagation();
                                                         const imageUrl = complaint.image.startsWith('http') 
                                                             ? complaint.image 
-                                                            : `http://localhost:4000${complaint.image}`;
+                                                            : `https://complain-backend.onrender.com${complaint.image}`;
                                                         window.open(imageUrl, '_blank');
                                                     }}
                                                     onError={(e) => {

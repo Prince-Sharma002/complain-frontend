@@ -85,7 +85,7 @@ const ComplainPortal = () => {
         formData.append('image', userComplain.image);
       }
 
-      const response = await fetch('http://localhost:4000/complain', {
+      const response = await fetch('https://complain-backend.onrender.com/complain', {
         method: 'POST',
         body: formData,
         // Don't set Content-Type header, let the browser set it with the correct boundary

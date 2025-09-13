@@ -51,7 +51,7 @@ const AdminPortal = () => {
       try {
         setIsLoading(true);
         
-        const response = await fetch('http://localhost:4000/getdata', {
+        const response = await fetch('https://complain-backend.onrender.com/getdata', {
           method: "GET",
           headers: {
             "Content-Type": "application/json"
