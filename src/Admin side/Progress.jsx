@@ -10,7 +10,7 @@ const Progress = () => {
     //  https://complain-backend.onrender.com/getdata
     const getdata = async () => {
         try {
-            const response = await fetch('https://complain-backend.onrender.com/getdata', {
+            const response = await fetch('http://localhost:4000/getdata', {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json"

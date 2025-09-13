@@ -12,12 +12,46 @@ const AdminPortal = () => {
   const mapInstanceRef = useRef(null); // Track if map has been initialized
   const popupRef = useRef(null); // Reference to the popup element
 
+  // Add event listeners for popup interactions
+  useEffect(() => {
+    // Handle image clicks
+    const handleImageClick = (e) => {
+      // Open image in new tab
+      window.open(e.detail, '_blank');
+    };
+
+    // Handle close button clicks
+    const handleClosePopup = (e) => {
+      e.stopPropagation();
+      if (popupRef.current) {
+        popupRef.current.classList.remove('show');
+      }
+    };
+
+    // Close popup when clicking outside
+    const handleOutsideClick = (e) => {
+      if (popupRef.current && !popupRef.current.contains(e.target)) {
+        popupRef.current.classList.remove('show');
+      }
+    };
+
+    document.addEventListener('imageClick', handleImageClick);
+    document.addEventListener('closePopup', handleClosePopup);
+    document.addEventListener('mousedown', handleOutsideClick);
+    
+    return () => {
+      document.removeEventListener('imageClick', handleImageClick);
+      document.removeEventListener('closePopup', handleClosePopup);
+      document.removeEventListener('mousedown', handleOutsideClick);
+    };
+  }, []);
+
   useEffect(() => {
     const getData = async () => {
       try {
         setIsLoading(true);
         
-        const response = await fetch('https://complain-backend.onrender.com/getdata', {
+        const response = await fetch('http://localhost:4000/getdata', {
           method: "GET",
           headers: {
             "Content-Type": "application/json"
@@ -38,13 +72,23 @@ const AdminPortal = () => {
           type: "Feature",
           properties: {
             description: `
-              <strong>Pid:</strong> ${item._id}<br>
-              <strong>Name: </strong> ${item.name}<br>
-              <strong>Coordinates: </strong> ${item.address.join(', ')}<br>
-              <strong>Phone: </strong> ${item.phone}<br>
-              <strong>Email: </strong> ${item.email}<br>
-              <strong>Description: </strong> ${item.desciption}<br>
-              `,
+              <div class="popup-content-inner">
+                <div class="popup-header">
+                  <h4>Complaint Details</h4>
+                  <button class="popup-close" onclick="document.dispatchEvent(new CustomEvent('closePopup'))">
+                    &times;
+                  </button>
+                </div>
+                <div class="popup-body">
+                  <p><strong>Pid:</strong> ${item._id}</p>
+                  <p><strong>Name:</strong> ${item.name}</p>
+                  <p><strong>Coordinates:</strong> ${item.address.join(', ')}</p>
+                  <p><strong>Phone:</strong> ${item.phone}</p>
+                  <p><strong>Email:</strong> ${item.email}</p>
+                  <p><strong>Description:</strong> ${item.description || item.desciption || 'No description provided'}</p>
+                </div>
+              </div>
+            `,
           },
           geometry: {
             type: "Point",
@@ -81,9 +125,23 @@ const AdminPortal = () => {
               },
             });
 
-            map.on("mouseenter", "places", (e) => {
-              map.getCanvas().style.cursor = "pointer";
+            // Click event for markers
+            map.on('click', 'places', (e) => {
+              map.getCanvas().style.cursor = 'pointer';
+              const coordinates = e.features[0].geometry.coordinates.slice();
               const description = e.features[0].properties.description;
+
+              // Close popup if already open
+              if (popupRef.current) {
+                popupRef.current.classList.remove('show');
+              }
+
+              // Ensure that if the map is zoomed out such that multiple
+              // copies of the feature are visible, the popup appears
+              // over the copy being pointed to.
+              while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+                coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+              }
 
               // Set the content of the popup element
               if (popupRef.current) {
@@ -91,14 +149,49 @@ const AdminPortal = () => {
                 if (contentDiv) {
                   contentDiv.innerHTML = description;
                 }
-                popupRef.current.classList.add('show');
+                
+                // Position the popup above the marker
+                const popup = popupRef.current;
+                popup.style.display = 'block';
+                const popupWidth = popup.offsetWidth;
+                const popupHeight = popup.offsetHeight;
+                
+                // Get the pixel coordinates of the marker
+                const point = map.project(coordinates);
+                const mapContainer = mapContainerRef.current.getBoundingClientRect();
+                
+                // Calculate the top position to place the popup above the marker
+                const top = point.y - popupHeight - 15; // 15px above the marker
+                
+                // Center the popup horizontally relative to the marker
+                const left = point.x - (popupWidth / 2);
+                
+                // Ensure popup stays within map bounds
+                const adjustedLeft = Math.max(10, Math.min(left, mapContainer.width - popupWidth - 10));
+                const adjustedTop = Math.max(10, top);
+                
+                popup.style.left = `${adjustedLeft}px`;
+                popup.style.top = `${adjustedTop}px`;
+                popup.classList.add('show');
               }
             });
 
-            map.on("mouseleave", "places", () => {
-              map.getCanvas().style.cursor = "";
-              if (popupRef.current) {
-                popupRef.current.classList.remove('show');
+            // Change the cursor to a pointer when the mouse is over the places layer.
+            map.on('mouseenter', 'places', () => {
+              map.getCanvas().style.cursor = 'pointer';
+            });
+
+            // Change it back to a pointer when it leaves.
+            map.on('mouseleave', 'places', () => {
+              map.getCanvas().style.cursor = '';
+            });
+
+            // Close popup when clicking on the map
+            map.on('click', (e) => {
+              if (e.originalEvent && e.originalEvent.target === map.getCanvas()) {
+                if (popupRef.current) {
+                  popupRef.current.classList.remove('show');
+                }
               }
             });
 
@@ -120,6 +213,42 @@ const AdminPortal = () => {
         mapInstanceRef.current.remove();
         mapInstanceRef.current = null;
       }
+    };
+  }, []);
+
+  // State for image modal
+  const [modalImage, setModalImage] = useState(null);
+
+  // Function to handle image click
+  const handleImageClick = (imageUrl) => {
+    setModalImage(imageUrl);
+    document.body.style.overflow = 'hidden'; // Prevent scrolling when modal is open
+  };
+
+  // Function to close modal
+  const closeModal = () => {
+    setModalImage(null);
+    document.body.style.overflow = 'auto'; // Re-enable scrolling
+  };
+
+  // Close modal when clicking outside the image
+  const handleModalClick = (e) => {
+    if (e.target.classList.contains('image-modal')) {
+      closeModal();
+    }
+  };
+
+  // Add event listener for escape key
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        closeModal();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
     };
   }, []);
 
@@ -156,6 +285,24 @@ const AdminPortal = () => {
         className="map-popup"
       >
         <div className="popup-content"></div>
+      </div>
+
+      {/* Image Modal */}
+      <div 
+        className={`image-modal ${modalImage ? 'show' : ''}`}
+        onClick={handleModalClick}
+      >
+        {modalImage && (
+          <>
+            <span className="close-modal" onClick={closeModal}>&times;</span>
+            <img 
+              src={modalImage} 
+              alt="Full size complaint" 
+              className="modal-image"
+              onClick={(e) => e.stopPropagation()}
+            />
+          </>
+        )}
       </div>
     </div>
   );

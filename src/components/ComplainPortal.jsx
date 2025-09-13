@@ -6,12 +6,13 @@ import { NavLink } from 'react-router-dom';
 const ComplainPortal = () => {
   const [userComplain, setUserComplain] = useState({
     name: "",
-    desciption: "",
+    description: "",
     address: [],
-    image: "",
+    image: null,
     phone: "",
     email: "",
   });
+  const [previewImage, setPreviewImage] = useState("");
 
 
   useEffect(() => {
@@ -47,52 +48,73 @@ const ComplainPortal = () => {
 
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-
-    if( name === "image"){
+    const { name, value, files } = e.target;
+    
+    if (name === "image" && files && files[0]) {
+      const file = files[0];
       setUserComplain({
         ...userComplain,
-        [name]: "value"
+        [name]: file
       });
-    }else{
+      // Create preview URL
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreviewImage(reader.result);
+      };
+      reader.readAsDataURL(file);
+    } else {
       setUserComplain({
         ...userComplain,
         [name]: value
       });
     }
-
   };
 
   const submithandler = async (e) => {
     e.preventDefault();
-    console.log("submit", userComplain);
-
-    try{
-
-        const response = fetch('https://complain-backend.onrender.com/complain' , {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(userComplain)
-        }
-        )
-
     
-    if (!response.ok) {
-        // Handle non-2xx HTTP responses
-        alert( "Comaplain Submitted Successfully" );
-        return;
-    }
-    
-    const data = await response.json();
-    console.log("Response data:", data);
-    alert( "Registration successful" );
+    try {
+      const formData = new FormData();
+      formData.append('name', userComplain.name);
+      formData.append('description', userComplain.description);
+      formData.append('address', JSON.stringify(userComplain.address));
+      formData.append('phone', userComplain.phone);
+      formData.append('email', userComplain.email);
+      
+      if (userComplain.image) {
+        formData.append('image', userComplain.image);
+      }
 
-    }catch(e){
-        console.log(e)
-    }
+      const response = await fetch('http://localhost:4000/complain', {
+        method: 'POST',
+        body: formData,
+        // Don't set Content-Type header, let the browser set it with the correct boundary
+      });
 
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to submit complaint');
+      }
+      
+      console.log("Response data:", data);
+      alert("Complaint submitted successfully!");
+      
+      // Reset form
+      setUserComplain({
+        name: "",
+        description: "",
+        address: [],
+        image: null,
+        phone: "",
+        email: "",
+      });
+      setPreviewImage("");
+      
+    } catch (error) {
+      console.error("Error submitting complaint:", error);
+      alert(error.message || "Failed to submit complaint. Please try again.");
+    }
   };
 
 
@@ -108,10 +130,9 @@ const ComplainPortal = () => {
                 className="form-input"
                 type="text"
                 name="name"
-                id="username"
-                onChange={handleChange}
                 value={userComplain.name}
-                placeholder="Enter your full name"
+                onChange={handleChange}
+                placeholder="Enter your name"
                 required
               />
             </div>
@@ -146,12 +167,12 @@ const ComplainPortal = () => {
           </div>
 
           <div className="form-group form-group-full">
-            <label className="form-label" htmlFor="desciption">Description</label>
+            <label className="form-label" htmlFor="description">Description</label>
             <input
               className="form-input"
               type="text"
-              name="desciption"
-              id="desciption"
+              name="description"
+              id="description"
               onChange={handleChange}
               value={userComplain.description}
               placeholder="Describe your complaint in detail"

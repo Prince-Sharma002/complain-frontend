@@ -4,10 +4,20 @@ import '../styles/Dashboard.css';
 
 const Dashboard = () => {
     const [data, setData] = useState([]);
+    
+    const getStatusText = (progress) => {
+        switch(progress) {
+            case 1: return 'New';
+            case 2: return 'In Progress';
+            case 3: return 'Under Review';
+            case 4: return 'Resolved';
+            default: return 'Pending';
+        }
+    };
 
     const getdata = async () => {
         try {
-            const response = await fetch('https://complain-backend.onrender.com/getdata', {
+            const response = await fetch('http://localhost:4000/getdata', {
                 method: "GET",
                 headers: {
                   "Content-Type": "application/json"
@@ -34,7 +44,7 @@ const Dashboard = () => {
 
     const sendEmail = async(email , id , progress)=>{
     try{
-        const response = fetch('https://complain-backend.onrender.com/sendemail' , {
+        const response = fetch('http://localhost:4000/sendemail' , {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -63,7 +73,7 @@ const Dashboard = () => {
 
     const updateProgress = async (id, newProgress) => {
         try {
-          const response = await fetch('https://complain-backend.onrender.com/updateprogress', {
+          const response = await fetch('http://localhost:4000/updateprogress', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -90,7 +100,7 @@ const Dashboard = () => {
 
     const deleteComapain = async (id) => {
         try {
-            const response = await fetch(`https://complain-backend.onrender.com/getdata/delete/${id}`, {
+            const response = await fetch(`http://localhost:4000/getdata/delete/${id}`, {
                 method: "DELETE",
                 headers: {
                     "Content-Type": "application/json"
@@ -140,33 +150,64 @@ const Dashboard = () => {
                         <thead>
                             <tr>
                                 <th>Name</th>
-                                <th>Description</th>
-                                <th>Address</th>
-                                <th>Phone</th>
                                 <th>Email</th>
+                                <th>Description</th>
+                                <th>Image</th>
+                                <th>Status</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {data.map((item, index) => (
-                                <tr key={index}>
-                                    <td className="data-cell name">{item.name}</td>
-                                    <td className="data-cell description" title={item.desciption}>{item.desciption}</td>
-                                    <td className="data-cell address">{item.address.join(', ')}</td>
-                                    <td className="data-cell contact">{item.phone}</td>
-                                    <td className="data-cell contact">{item.email}</td>
+                            {data.map((complaint) => (
+                                <tr key={complaint._id}>
+                                    <td>{complaint.name}</td>
+                                    <td>{complaint.email || 'N/A'}</td>
+                                    <td>{complaint.description || complaint.desciption || 'No description'}</td>
                                     <td>
+                                        {complaint.image && (
+                                            <div className="complaint-image">
+                                                <img 
+                                                    src={complaint.image.startsWith('http') ? complaint.image : `http://localhost:4000${complaint.image}`} 
+                                                    alt="Complaint evidence"
+                                                    style={{ cursor: 'pointer' }}
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        const imageUrl = complaint.image.startsWith('http') 
+                                                            ? complaint.image 
+                                                            : `http://localhost:4000${complaint.image}`;
+                                                        window.open(imageUrl, '_blank');
+                                                    }}
+                                                    onError={(e) => {
+                                                        e.target.onerror = null;
+                                                        e.target.src = 'https://via.placeholder.com/100?text=Image+Not+Found';
+                                                    }}
+                                                />
+                                            </div>
+                                        )}
+                                    </td>
+                                    <td>
+                                        <span className={`status-badge ${
+                                            complaint.progress === 1 ? 'status-new' :
+                                            complaint.progress === 2 ? 'status-in-progress' :
+                                            complaint.progress === 3 ? 'status-under-review' :
+                                            'status-resolved'
+                                        }`}>
+                                            {getStatusText(complaint.progress)}
+                                        </span>
+                                    </td>
+                                    <td className="action-buttons">
                                         <button 
-                                            className="action-btn btn-email" 
-                                            onClick={() => sendEmail(item.email, item._id, item.progress)}
+                                            onClick={() => sendEmail(complaint.email, complaint._id, complaint.progress)}
+                                            disabled={complaint.progress > 1}
+                                            className="action-btn email-btn"
                                         >
-                                            📧 Send Email
+                                            ✉️
                                         </button>
                                         <button 
-                                            className="action-btn btn-delete" 
-                                            onClick={() => deleteComapain(item._id)}
+                                            onClick={() => deleteComapain(complaint._id)}
+                                            className="action-btn delete-btn"
                                         >
-                                            🗑️ Delete
+                                            🗑️
                                         </button>
                                     </td>
                                 </tr>
